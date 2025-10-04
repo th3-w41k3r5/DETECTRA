@@ -1,9 +1,9 @@
-fastapi==0.109.0
-uvicorn==0.27.0
+fastapi==0.115.0
+uvicorn==0.32.0
 torch==2.5.1
-torchvision==0.21.0
-Pillow==11.0.0
-huggingface_hub==0.20.0
-python-multipart==0.0.6
-pydantic==2.5.0
-numpy
+torchvision==0.20.1
+Pillow==10.4.0
+huggingface_hub==0.26.0
+python-multipart==0.0.12
+pydantic==2.10.0
+numpy==1.26.4
