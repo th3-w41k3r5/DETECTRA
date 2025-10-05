@@ -14,10 +14,13 @@ from pydantic import BaseModel
 from huggingface_hub import hf_hub_download
 
 # ---------------- CONFIG ---------------- #
-HF_REPO_ID = "your-username/detectra-model"  # Change this!
+HF_REPO_ID = "pswalker/detectra-bt-model"
 MODEL_FILENAME = "best.pt"
 MODEL_VERSION = "v1.0"
-ALLOWED_ORIGINS = ["*"]  # Change to your frontend domain
+ALLOWED_ORIGINS = [
+    "https://detectraa.vercel.app",
+    "http://localhost:3000",
+]
 
 # ---------------- MODEL ---------------- #
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -32,7 +35,6 @@ def load_model():
     
     print(f"Loading model from Hugging Face: {HF_REPO_ID}")
     
-    # Download from Hugging Face
     model_path = hf_hub_download(
         repo_id=HF_REPO_ID,
         filename=MODEL_FILENAME,
@@ -130,7 +132,6 @@ def health():
 
 @app.get("/model-info")
 def model_info():
-    # Load model to get class names
     _, class_names = load_model()
     return {
         "model_version": MODEL_VERSION,
@@ -142,7 +143,6 @@ async def predict_image(file: UploadFile = File(...), explain: bool = Form(False
     if not file.content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail="Upload must be an image")
     
-    # Load model (lazy loading)
     global model, CLASS_NAMES
     model, CLASS_NAMES = load_model()
     
@@ -173,14 +173,11 @@ async def predict_image(file: UploadFile = File(...), explain: bool = Form(False
 
 @app.post("/feedback")
 def submit_feedback(f: Feedback):
-    # Note: SQLite won't persist on Vercel serverless
-    # Consider using external database (Supabase, MongoDB Atlas)
-    # For now, just acknowledge receipt
     print(f"Feedback received: {f.dict()}")
     return {
         "status": "feedback received",
         "note": "Feedback logging disabled in serverless deployment"
     }
 
-# For Vercel (important!)
+# For Vercel
 app = app
